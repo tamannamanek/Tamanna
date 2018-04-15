@@ -1,0 +1,115 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+struct index
+{
+	int strt;
+	int end;
+}ob;
+int arr[100];
+int arr2[100];
+void *sort(void *obj1)
+{
+
+	int i,j,temp;
+	struct index *i1=obj1;
+        int end=i1->end;
+
+       for(i=0;i<end-1;i++)
+	{
+		for(j=0;j<end-i-1;j++)
+		{
+			if(arr[j]>arr[j+1])
+			{
+				temp=arr[j];
+				arr[j]=arr[j+1];
+				arr[j+1]=temp;
+			}
+		}
+	}
+}
+
+void *merge(void *obj2)
+{
+	int i;
+	struct index *i2=obj2;
+	int s1,s2,e1,e2;
+	int k=0;
+	s1=0;
+	e1=i2->strt;
+	s2=i2->strt+1;
+	e2=i2->end;
+	while(s1<=e1 && s2<=e2)
+	{
+		if(arr[s1]>arr[s2])
+		{
+			arr2[k]=arr[s2];
+			s2=s2+1;
+		}
+		else
+		{
+			arr2[k]=arr[s1];
+			s1=s1+1;
+		}	
+		k=k+1;
+	}
+	while(s2<=e2)
+	{
+		arr2[k]=arr[s2];
+		k=k+1;
+		s2=s2+1;
+	}
+	while(s1<=e1)
+	{
+		arr2[k]=arr[s1];
+		k=k+1;
+		s1=s1+1;
+	}
+	printf("After merging both the arrays \n");
+	for(i=0;i<k;i++)
+	{
+		printf("%d ",arr2[i]);
+	}
+  printf("\n");
+}
+main()
+{
+int i,n;
+printf("Enter the size of the array");
+scanf("%d",&n);
+printf("Enter values");
+for(i=0;i<n;i++)
+{
+	scanf("%d",&arr[i]);
+}
+int mid=n/2;
+ob.strt=0;
+ob.end=mid;
+pthread_t p1,p2,p3;
+pthread_create(&p1,NULL,sort,&ob);
+pthread_join(p1,NULL);
+printf("Thread 1 \n");
+for(i=ob.strt;i<ob.end;i++)
+{
+	printf("%d ",arr[i]);
+}
+printf("\n");
+ob.strt=mid;
+ob.end=n;
+pthread_create(&p2,NULL,sort,&ob);
+pthread_join(p2,NULL);
+printf("Thread 2 \n");
+for(i=ob.strt;i<ob.end;i++)
+{
+        printf("%d ",arr[i]);
+}
+printf("\n");
+
+ob.strt=mid-1;
+ob.end=n-1;
+pthread_create(&p3,NULL,merge,&ob);
+pthread_join(p3,NULL);
+printf("\n");
+}
+
+	
