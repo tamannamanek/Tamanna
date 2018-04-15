@@ -1,0 +1,73 @@
+#include<stdio.h>
+#include<pthread.h>
+#include<unistd.h>
+struct list
+{
+	int size;
+	int arr[100];
+};
+int avg;
+int min;
+int max;
+void *average(void *obj1)
+{
+	struct list *l1=obj1;
+	int i;
+	int sum=0;
+	for (i=0;i<l1->size;i++)
+	{
+		sum=sum+l1->arr[i];
+ 
+        }
+	avg=sum/l1->size;
+}
+void *minimum(void *obj2)
+{
+	struct list * l2=obj2;
+	int i;
+	min=99999;                                                                                                                                                                          
+	for(i=0;i<l2->size;i++)
+	{
+		if(l2->arr[i]<min)
+		{
+			min=l2->arr[i];
+		}
+	}
+	
+}
+
+void *maximum(void *obj3)
+{
+	struct list *l3=obj3;
+	max=0;
+	int i;
+	for(i=0;i<l3->size;i++)
+	{	
+		if(l3->arr[i]>max)
+		{
+			max=l3->arr[i];
+		}
+	}
+}
+int main()
+{
+struct list l;
+int i;
+printf("Enter total no of values in list");
+scanf("%d",&l.size);
+printf("Enter the elements of list");
+for(i=0;i<l.size;i++)
+{
+	scanf("%d",&l.arr[i]);
+}
+pthread_t p1,p2,p3;
+pthread_create(&p1,NULL,average,&l);
+pthread_join(p1,NULL);
+pthread_create(&p2,NULL,minimum,&l);
+pthread_join(p2,NULL);
+pthread_create(&p3,NULL,maximum,&l);
+pthread_join(p3,NULL);
+printf("The average value is %d\n",avg);
+printf("The minimum value is %d\n",min);
+printf("The maximum value is %d\n",max);
+}
